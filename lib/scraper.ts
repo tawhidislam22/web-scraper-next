@@ -3,12 +3,14 @@ import * as cheerio from 'cheerio';
 
 export async function findLinkedInFromDuckDuckGo(urls: string[]) {
   const browser = await playwright.chromium.launch({ 
-    headless: false,
+    headless: true,
+    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
     args: [
       '--no-sandbox', 
       '--disable-setuid-sandbox', 
       '--disable-blink-features=AutomationControlled',
-      '--disable-dev-shm-usage'
+      '--disable-dev-shm-usage',
+      '--disable-gpu'
     ]
   });
   

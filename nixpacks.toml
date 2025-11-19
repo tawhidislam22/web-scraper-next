@@ -1,12 +1,10 @@
-providers = ["node"]
-
 [phases.setup]
-nixPkgs = ["...", "chromium"]
+nixPkgs = ["nodejs", "chromium", "nss", "freetype", "harfbuzz", "ca-certificates", "ttf-freefont"]
 
 [phases.install]
 cmds = [
-  "npm install",
-  "npx playwright install --with-deps chromium"
+  "npm ci --legacy-peer-deps",
+  "PLAYWRIGHT_BROWSERS_PATH=/opt/render/project/.cache npx playwright install chromium"
 ]
 
 [phases.build]
