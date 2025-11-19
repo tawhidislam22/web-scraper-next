@@ -330,24 +330,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Info Section */}
-            <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-3">How to use:</h3>
-              <ul className="space-y-2 text-blue-800">
-                <li className="flex items-start">
-                  <span className="mr-2">1.</span>
-                  <span>Enter company URLs (one per line) or upload a CSV file containing URLs in the first column</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">2.</span>
-                  <span>Click "Start Scraping" to begin searching for LinkedIn company profiles</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">3.</span>
-                  <span>Download the results as a CSV file from Supabase storage</span>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

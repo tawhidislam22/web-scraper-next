@@ -3,7 +3,7 @@ import * as cheerio from 'cheerio';
 
 export async function findLinkedInFromDuckDuckGo(urls: string[]) {
   const browser = await playwright.chromium.launch({ 
-    headless: false,
+    headless: true,
     args: [
       '--no-sandbox', 
       '--disable-setuid-sandbox', 
