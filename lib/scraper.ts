@@ -57,10 +57,10 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
     const page = await context.newPage();
 
     try {
-      const query = `linkedin.com/company ${url}`;
-      const searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+      const query = `site:linkedin.com/company ${url}`;
+      const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
       
-      console.log(`\n🔍 Searching DuckDuckGo: ${query}`);
+      console.log(`\n🔍 Searching Google: ${query}`);
       
       // Random delay before search (human-like behavior)
       await page.waitForTimeout(Math.random() * 2000 + 1000);
@@ -70,12 +70,8 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
         timeout: 30000 
       });
       
-      // Wait longer for DuckDuckGo to load results in headless mode
-      await page.waitForTimeout(10000);
-      
-      // Scroll to trigger lazy loading
-      await page.evaluate(() => window.scrollBy(0, 500));
-      await page.waitForTimeout(2000);
+      // Wait for Google to load results
+      await page.waitForTimeout(3000);
       
       // Get the page HTML
       const html = await page.content();
@@ -83,13 +79,18 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
       
       let linkedinUrl: string | null = null;
       
-      // Look for LinkedIn links in the HTML
+      // Look for LinkedIn links in Google search results
       $('a').each((i: number, el: any) => {
         const href = $(el).attr('href');
-        if (href && (href.includes('linkedin.com/company/') || href.includes('linkedin.com/in/'))) {
-          // Clean the URL
-          linkedinUrl = href.split('?')[0].split('#')[0];
-          return false; // Stop searching
+        if (href && href.includes('linkedin.com/company/')) {
+          // Extract actual URL from Google redirect
+          const match = href.match(/url=([^&]+)/);
+          if (match) {
+            linkedinUrl = decodeURIComponent(match[1]).split('?')[0].split('#')[0];
+          } else if (href.startsWith('http') && href.includes('linkedin.com/company/')) {
+            linkedinUrl = href.split('?')[0].split('#')[0];
+          }
+          if (linkedinUrl) return false; // Stop searching
         }
       });
 
