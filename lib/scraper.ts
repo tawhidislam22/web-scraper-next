@@ -9,21 +9,28 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
       '--disable-setuid-sandbox', 
       '--disable-blink-features=AutomationControlled',
       '--disable-dev-shm-usage',
-      '--disable-gpu'
+      '--disable-gpu',
+      '--disable-features=IsolateOrigins,site-per-process'
     ]
   });
   
-  // Stealth settings to avoid detection in headless mode
+  // Enhanced stealth settings to avoid detection
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
     viewport: { width: 1920, height: 1080 },
+    locale: 'en-US',
+    timezoneId: 'America/New_York',
     extraHTTPHeaders: {
       'Accept-Language': 'en-US,en;q=0.9',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
       'Accept-Encoding': 'gzip, deflate, br',
       'DNT': '1',
       'Connection': 'keep-alive',
-      'Upgrade-Insecure-Requests': '1'
+      'Upgrade-Insecure-Requests': '1',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1'
     }
   });
   
@@ -55,13 +62,20 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
       
       console.log(`\n🔍 Searching DuckDuckGo: ${query}`);
       
+      // Random delay before search (human-like behavior)
+      await page.waitForTimeout(Math.random() * 2000 + 1000);
+      
       await page.goto(searchUrl, { 
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: 30000 
       });
       
-      // Wait for DuckDuckGo to load results (increase wait time for headless)
-      await page.waitForTimeout(7000);
+      // Wait longer for DuckDuckGo to load results in headless mode
+      await page.waitForTimeout(10000);
+      
+      // Scroll to trigger lazy loading
+      await page.evaluate(() => window.scrollBy(0, 500));
+      await page.waitForTimeout(2000);
       
       // Get the page HTML
       const html = await page.content();
