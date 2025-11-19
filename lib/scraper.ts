@@ -8,30 +8,17 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
       '--no-sandbox', 
       '--disable-setuid-sandbox', 
       '--disable-blink-features=AutomationControlled',
+      '--disable-web-security',
+      '--disable-features=IsolateOrigins,site-per-process',
       '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--disable-features=IsolateOrigins,site-per-process'
+      '--disable-gpu'
     ]
   });
   
   // Enhanced stealth settings to avoid detection
   const context = await browser.newContext({
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-    viewport: { width: 1920, height: 1080 },
-    locale: 'en-US',
-    timezoneId: 'America/New_York',
-    extraHTTPHeaders: {
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'DNT': '1',
-      'Connection': 'keep-alive',
-      'Upgrade-Insecure-Requests': '1',
-      'Sec-Fetch-Dest': 'document',
-      'Sec-Fetch-Mode': 'navigate',
-      'Sec-Fetch-Site': 'none',
-      'Sec-Fetch-User': '?1'
-    }
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    viewport: { width: 1366, height: 768 }
   });
   
   // Inject script to mask automation
@@ -39,15 +26,6 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
     // Override the navigator.webdriver property
     Object.defineProperty(navigator, 'webdriver', {
       get: () => false,
-    });
-    
-    // Mock plugins and languages
-    Object.defineProperty(navigator, 'plugins', {
-      get: () => [1, 2, 3, 4, 5],
-    });
-    
-    Object.defineProperty(navigator, 'languages', {
-      get: () => ['en-US', 'en'],
     });
   });
   
@@ -66,12 +44,16 @@ export async function findLinkedInFromDuckDuckGo(urls: string[]) {
       await page.waitForTimeout(Math.random() * 2000 + 1000);
       
       await page.goto(searchUrl, { 
-        waitUntil: 'domcontentloaded',
+        waitUntil: 'networkidle',
         timeout: 30000 
       });
       
-      // Wait for Google to load results
-      await page.waitForTimeout(3000);
+      // Wait and simulate human behavior
+      await page.waitForTimeout(800);
+      await page.mouse.move(200, 200);
+      await page.mouse.move(500, 300);
+      await page.evaluate(() => window.scrollBy(0, 500));
+      await page.waitForTimeout(500);
       
       // Get the page HTML
       const html = await page.content();
